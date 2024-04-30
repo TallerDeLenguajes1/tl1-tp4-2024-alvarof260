@@ -19,18 +19,21 @@ void crearListaVacia(Nodo **head);
 Tarea *crearTarea(int id, char *desc, int dura);
 void insertarNodo(Nodo **head, Tarea *tarea);
 void mostrarTareas(Nodo **head);
+int generadorID(Nodo **head);
 
 int main()
 {
-    Nodo *Head = NULL;
-    crearListaVacia(&Head);
+    Nodo *listasPendientes = NULL;
+    Nodo *ListasRealizadas = NULL;
+    crearListaVacia(&listasPendientes);
+    crearListaVacia(&ListasRealizadas);
 
-    Tarea *tarea1 = crearTarea(1000, "Tarea a hacer", 60);
-    Tarea *tarea2 = crearTarea(1001, "Tarea a hacer 2", 120);
-    insertarNodo(&Head, tarea1);
-    insertarNodo(&Head, tarea2);
+    Tarea *tarea1 = crearTarea(generadorID(&listasPendientes), "Tarea a hacer", 60);
+    insertarNodo(&listasPendientes, tarea1);
+    Tarea *tarea2 = crearTarea(generadorID(&listasPendientes), "Tarea a hacer 2", 120);
+    insertarNodo(&listasPendientes, tarea2);
 
-    mostrarTareas(&Head);
+    mostrarTareas(&listasPendientes);
 
     return 0;
 }
@@ -67,5 +70,25 @@ void mostrarTareas(Nodo **head)
         printf("el id: %d\ndescripcion: %s\nduracion de la tarea: %d\n", aux->T.TareaID, aux->T.Descripcion, aux->T.Duracion);
         printf("\n");
         aux = aux->Siguiente;
+    }
+}
+
+int generadorID(Nodo **head)
+{
+    if (*head == NULL)
+    {
+        return 1000;
+    }
+    else
+    {
+        int id;
+        Nodo *aux = *head;
+        while (aux != NULL)
+        {
+            id = aux->T.TareaID;
+            aux = aux->Siguiente;
+        }
+        id++;
+        return id;
     }
 }
