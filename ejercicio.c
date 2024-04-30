@@ -21,6 +21,7 @@ void insertarNodo(Nodo **head, Tarea *tarea);
 void mostrarTareas(Nodo **head);
 int generadorID(Nodo **head);
 void moverTarea(Nodo **pendientes, Nodo **realizadas, int id);
+void buscarTarea(Nodo *pendientes, Nodo *realizadas, int parametro, const char *palabraClave);
 
 int main()
 {
@@ -41,7 +42,8 @@ int main()
         printf("1. Mostrar tareas pendientes\n");
         printf("2. Mostrar tareas realizadas\n");
         printf("3. Mover tarea de pendientes a realizadas\n");
-        printf("4. Salir\n");
+        printf("4. Consultar tarea por ID o palabra clave\n");
+        printf("5. Salir\n");
         printf("Ingrese su opción: ");
         scanf("%d", &opcion);
         fflush(stdin); // Limpiar el búfer del teclado
@@ -64,6 +66,16 @@ int main()
             moverTarea(&listasPendientes, &ListasRealizadas, id);
             break;
         case 4:
+            printf("\nIngrese el ID o la palabra clave de la tarea a consultar: ");
+            int parametro;
+            char palabraClave[100];
+            scanf("%d", &parametro); // Lee el ID o palabra clave
+            fflush(stdin);
+            fgets(palabraClave, sizeof(palabraClave), stdin); // Lee la palabra clave (evita problemas con el buffer)
+            palabraClave[strcspn(palabraClave, "\n")] = '\0'; // Elimina el salto de línea al final
+            buscarTarea(listasPendientes, ListasRealizadas, parametro, palabraClave);
+            break;
+        case 5:
             printf("\nSaliendo del programa...\n");
             break;
         default:
@@ -156,5 +168,39 @@ void moverTarea(Nodo **pendientes, Nodo **realizadas, int id)
     else
     {
         printf("No se encontró una tarea con el ID especificado en la lista de pendientes.\n");
+    }
+}
+
+void buscarTarea(Nodo *pendientes, Nodo *realizadas, int parametro, const char *palabraClave)
+{
+    Nodo *aux = pendientes;
+    int encontradas = 0;
+
+    // Buscar en tareas pendientes
+    while (aux != NULL)
+    {
+        if (aux->T.TareaID == parametro || strstr(aux->T.Descripcion, palabraClave) != NULL)
+        {
+            printf("Tarea Pendiente - ID: %d, Descripción: %s, Duración: %d\n", aux->T.TareaID, aux->T.Descripcion, aux->T.Duracion);
+            encontradas++;
+        }
+        aux = aux->Siguiente;
+    }
+
+    // Buscar en tareas realizadas
+    aux = realizadas;
+    while (aux != NULL)
+    {
+        if (aux->T.TareaID == parametro || strstr(aux->T.Descripcion, palabraClave) != NULL)
+        {
+            printf("Tarea Realizada - ID: %d, Descripción: %s, Duración: %d\n", aux->T.TareaID, aux->T.Descripcion, aux->T.Duracion);
+            encontradas++;
+        }
+        aux = aux->Siguiente;
+    }
+
+    if (encontradas == 0)
+    {
+        printf("No se encontraron tareas que coincidan con el criterio de búsqueda.\n");
     }
 }
